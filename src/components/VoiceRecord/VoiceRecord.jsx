@@ -14,7 +14,7 @@ import "./style.css";
 
 export default function VoiceRecord() {
   const [script, setScript] = useState("");
-  const [isRecording, setIsRecording] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioRef = useRef(null); // 오디오 태그 참조 추가
   const audioChunksRef = useRef([]);
