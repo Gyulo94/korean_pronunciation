@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Toast } from "../components/ui/toast-alert";
 
-const API_URL = "http://aiopen.etri.re.kr:8000/WiseASR/PronunciationKor";
+const API_URL = "https://aiopen.etri.re.kr:8000/WiseASR/PronunciationKor";
 const API_KEY = process.env.REACT_APP_API_KEY; // 여기에 실제 API 키를 입력하세요.
 
 // console.log("API_KEY:", API_KEY); // 환경 변수 출력
