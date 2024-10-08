@@ -8,7 +8,7 @@
 
 .voice-record-img-wrap {
   width: 250px;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
 
 .voice-record-img-wrap img {
@@ -22,7 +22,7 @@
   background: #ffb1b4;
   border-radius: 50%;
   left: 50%;
-  top: 64%;
+  top: 55%;
   width: 50px;
   transform: translate(-50%, -50%);
 }

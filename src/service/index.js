@@ -1,8 +1,9 @@
 import axios from "axios";
 import { Toast } from "../components/ui/toast-alert";
 
-const API_URL = "http://aiopen.etri.re.kr:8000/WiseASR/PronunciationKor";
-const API_KEY = process.env.REACT_APP_API_KEY; // 여기에 실제 API 키를 입력하세요.
+// const API_URL = "http://localhost:8000/api/request-pronunce";
+const API_URL =
+  "https://ethnic-sparrow-gyulabs-668e5137.koyeb.app/api/request-pronunce";
 
 // console.log("API_KEY:", API_KEY); // 환경 변수 출력
 
@@ -12,7 +13,6 @@ export const requestPronunce = async (requestBody) => {
     const response = await axios.post(API_URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: API_KEY,
       },
     });
 
