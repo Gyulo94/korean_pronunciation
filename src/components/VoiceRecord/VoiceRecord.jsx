@@ -23,7 +23,7 @@ export default function VoiceRecord() {
   const [isPlaying, setIsPlaying] = useState(false); // 오디오 재생 상태 추가
   const [audioUrl, setAudioUrl] = useState(null); // audio URL 상태 추가
   const [modalOpen, setModalOpen] = useState(false);
-  const [score, setScore] = useState(1);
+  const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const color = "#ffb1b4";
 
@@ -64,6 +64,7 @@ export default function VoiceRecord() {
           icon: "error",
           title: "Por favor, introduce tu texto.",
         });
+        setModalOpen(false);
         return;
       }
       if (base64data) {
@@ -82,7 +83,12 @@ export default function VoiceRecord() {
           console.log("Request body:", requestBody); // 요청 본문 로그 추가
           const response = await requestPronunce(requestBody);
           if (response.return_object.score === "-nan") {
-            setScore(1);
+            Toast.fire({
+              icon: "error",
+              title: "Se ha producido un error desconocido del servidor.",
+            });
+            setModalOpen(false);
+            return;
           }
           if (response.result === 0) {
             setScore(Math.round(response.return_object.score));
@@ -90,8 +96,10 @@ export default function VoiceRecord() {
           if (response.status === 524) {
             Toast.fire({
               icon: "error",
-              title: "No tiene contenido",
+              title:
+                "No se puede recibir respuesta del servidor. El tiempo de solicitud ha expirado.",
             });
+            return;
           }
           console.log("response", response);
         } catch (error) {
@@ -148,6 +156,7 @@ export default function VoiceRecord() {
 
   return (
     <div className="voice-record-container">
+      {isLoading && <div className="bg"></div>}
       <div className="voice-record-img-wrap">
         <img src={Mar} alt={Mar} />
       </div>
@@ -185,15 +194,6 @@ export default function VoiceRecord() {
             ) : (
               <>
                 <h2>My Score</h2>
-
-                {score === "-nan" && (
-                  <>
-                    <div className="voice-record-score">
-                      <TryAgain />
-                    </div>
-                    <h2>TryAgain</h2>
-                  </>
-                )}
                 {score === 1 && (
                   <>
                     <div className="voice-record-score">
