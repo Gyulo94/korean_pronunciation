@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
-import MainMar from "../../assets/img/mar_main.jpg";
+import Mar from "../../assets/img/mar_main.jpg";
 import { requestPronunce } from "../../service/index"; // requestPronunce 함수가 정의된 파일에서 가져오기
 import PlayIcon from "../ui/icons/PlayIcon";
 import PlayStopIcon from "../ui/icons/PlayStopIcon";
@@ -9,6 +9,7 @@ import Good from "../ui/lottie/Good";
 import Nice from "../ui/lottie/Nice";
 import TryAgain from "../ui/lottie/TryAgain";
 import VoiceWave from "../ui/lottie/VoiceWave";
+import { Toast } from "../ui/toast-alert"; // toast 함수가 정의된 파일에서 가져오기
 import "./style.css";
 
 export default function VoiceRecord() {
@@ -37,7 +38,7 @@ export default function VoiceRecord() {
       const audioUrl = URL.createObjectURL(audioBlob); // Blob을 URL로 변환
       setAudioUrl(audioUrl);
       await addAudioElement(audioBlob);
-      console.log("audioBlob", audioBlob);
+      // console.log("audioBlob", audioBlob);
     };
 
     mediaRecorderRef.current.start();
@@ -54,11 +55,14 @@ export default function VoiceRecord() {
     reader.onloadend = async () => {
       const base64data = reader.result?.toString().split(",")[1];
       if (script === "") {
-        alert("스크립트를 입력해주세요.");
+        Toast.fire({
+          icon: "error",
+          title: "Por favor, introduce tu texto.",
+        });
         return;
       }
       if (base64data) {
-        console.log("script", script);
+        // console.log("script", script);
 
         const requestBody = {
           request_id: "reserved field",
@@ -70,7 +74,7 @@ export default function VoiceRecord() {
         };
 
         try {
-          console.log("Request body:", requestBody); // 요청 본문 로그 추가
+          // console.log("Request body:", requestBody); // 요청 본문 로그 추가
           const response = await requestPronunce(requestBody);
           if (response.return_object.score === "-nan") {
             setScore(1);
@@ -79,7 +83,7 @@ export default function VoiceRecord() {
             setScore(Math.round(response.return_object.score));
             setModalOpen(true);
           }
-          console.log("response", response);
+          // console.log("response", response);
         } catch (error) {
           console.error("Error in requestPronunce:", error);
         }
@@ -133,7 +137,17 @@ export default function VoiceRecord() {
   return (
     <div className="voice-record-container">
       <div className="voice-record-img-wrap">
-        <img src={MainMar} alt={MainMar} />
+        <img src={Mar} alt={Mar} />
+      </div>
+      <div className="voice-record-wave">{isRecording && <VoiceWave />}</div>
+      <div className="voice-record-textarea">
+        <textarea
+          ref={textareaRef}
+          placeholder={"Introduce tu texto."}
+          value={script}
+          onChange={onChangeHandler}
+          rows={1}
+        />
       </div>
       <div
         className="voice-record-btn"
@@ -141,16 +155,6 @@ export default function VoiceRecord() {
       >
         {isRecording ? <PlayStopIcon /> : <PlayIcon />}
       </div>
-      <div className="voice-record-textarea">
-        <textarea
-          ref={textareaRef}
-          placeholder={"스크립트를 입력해주세요."}
-          value={script}
-          onChange={onChangeHandler}
-          rows={1}
-        />
-      </div>
-      <div className="voice-record-wave">{isRecording && <VoiceWave />}</div>
 
       {modalOpen && (
         <div className="voice-record-modal">
@@ -212,7 +216,6 @@ export default function VoiceRecord() {
                   src={audioUrl}
                   onEnded={handleAudioEnded}
                 ></audio>
-                {/* 오디오 태그 참조 추가 */}
                 <div>{isPlaying ? <FaPause /> : <FaPlay color="#fff" />}</div>
               </div>
               <button
