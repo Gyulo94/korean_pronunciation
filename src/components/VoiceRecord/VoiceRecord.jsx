@@ -222,7 +222,7 @@ export default function VoiceRecord() {
                 className="voice-record-close"
                 onClick={onClickCloseModal}
               >
-                닫기
+                Cerrar
               </button>
             </div>
           </div>
