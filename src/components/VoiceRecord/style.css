@@ -131,3 +131,22 @@
   margin-top: 20px;
   width: 30px;
 }
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 340px;
+  height: 400px;
+}
+.spinner {
+  margin-right: 40px;
+}
+
+.spinner-container p {
+  color: #ffb1b4;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}

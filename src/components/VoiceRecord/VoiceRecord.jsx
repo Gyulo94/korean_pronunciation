@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
+import RingLoader from "react-spinners/RingLoader";
 import Mar from "../../assets/img/mar_main.jpg";
 import { requestPronunce } from "../../service/index"; // requestPronunce 함수가 정의된 파일에서 가져오기
 import PlayIcon from "../ui/icons/PlayIcon";
@@ -22,7 +23,9 @@ export default function VoiceRecord() {
   const [isPlaying, setIsPlaying] = useState(false); // 오디오 재생 상태 추가
   const [audioUrl, setAudioUrl] = useState(null); // audio URL 상태 추가
   const [modalOpen, setModalOpen] = useState(false);
-  const [score, setScore] = useState(null);
+  const [score, setScore] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const color = "#ffb1b4";
 
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -51,6 +54,8 @@ export default function VoiceRecord() {
   };
 
   const addAudioElement = async (audioBlob) => {
+    setModalOpen(true);
+    setIsLoading(true);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64data = reader.result?.toString().split(",")[1];
@@ -81,11 +86,18 @@ export default function VoiceRecord() {
           }
           if (response.result === 0) {
             setScore(Math.round(response.return_object.score));
-            setModalOpen(true);
+          }
+          if (response.status === 524) {
+            Toast.fire({
+              icon: "error",
+              title: "No tiene contenido",
+            });
           }
           console.log("response", response);
         } catch (error) {
           console.error("Error in requestPronunce:", error);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         console.error("Failed to convert audio to Base64");
@@ -155,76 +167,93 @@ export default function VoiceRecord() {
       >
         {isRecording ? <PlayStopIcon /> : <PlayIcon />}
       </div>
-
       {modalOpen && (
         <div className="voice-record-modal">
           <div className="voice-record-modal-content">
-            <h2>My Score</h2>
-
-            {score === "-nan" && (
-              <>
-                <div className="voice-record-score">
-                  <TryAgain />
+            {isLoading ? (
+              <div className="spinner-container">
+                <div className="spinner">
+                  <RingLoader
+                    color={color}
+                    size={150}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
                 </div>
-                <h2>TryAgain</h2>
-              </>
-            )}
-            {score === 1 && (
-              <>
-                <div className="voice-record-score">
-                  <TryAgain />
-                </div>
-                <h2>TryAgain</h2>
-              </>
-            )}
-            {score === 2 && (
-              <>
-                <div className="voice-record-score">
-                  <Nice />
-                </div>
-                <h2>Nice</h2>
-              </>
-            )}
-            {score === 3 && (
-              <>
-                <div className="voice-record-score">
-                  <Good />
-                </div>
-                <h2>Good</h2>
-              </>
-            )}
-            {score === 4 && (
-              <>
-                <div className="voice-record-score">
-                  <Excellent />
-                </div>
-                <h2>Excellent</h2>
-              </>
-            )}
-            {score === 5 && (
-              <>
-                <div className="voice-record-score">
-                  <Excellent />
-                </div>
-                <h2>Excellent</h2>
-              </>
-            )}
-            <div className="voice-record-modal-bottom">
-              <div className="audio-player" onClick={togglePlayPause}>
-                <audio
-                  ref={audioRef}
-                  src={audioUrl}
-                  onEnded={handleAudioEnded}
-                ></audio>
-                <div>{isPlaying ? <FaPause /> : <FaPlay color="#fff" />}</div>
+                <p>Cargando...</p>
               </div>
-              <button
-                className="voice-record-close"
-                onClick={onClickCloseModal}
-              >
-                Cerrar
-              </button>
-            </div>
+            ) : (
+              <>
+                <h2>My Score</h2>
+
+                {score === "-nan" && (
+                  <>
+                    <div className="voice-record-score">
+                      <TryAgain />
+                    </div>
+                    <h2>TryAgain</h2>
+                  </>
+                )}
+                {score === 1 && (
+                  <>
+                    <div className="voice-record-score">
+                      <TryAgain />
+                    </div>
+                    <h2>TryAgain</h2>
+                  </>
+                )}
+                {score === 2 && (
+                  <>
+                    <div className="voice-record-score">
+                      <Nice />
+                    </div>
+                    <h2>Nice</h2>
+                  </>
+                )}
+                {score === 3 && (
+                  <>
+                    <div className="voice-record-score">
+                      <Good />
+                    </div>
+                    <h2>Good</h2>
+                  </>
+                )}
+                {score === 4 && (
+                  <>
+                    <div className="voice-record-score">
+                      <Excellent />
+                    </div>
+                    <h2>Excellent</h2>
+                  </>
+                )}
+                {score === 5 && (
+                  <>
+                    <div className="voice-record-score">
+                      <Excellent />
+                    </div>
+                    <h2>Excellent</h2>
+                  </>
+                )}
+                <div className="voice-record-modal-bottom">
+                  <div className="audio-player" onClick={togglePlayPause}>
+                    <audio
+                      ref={audioRef}
+                      src={audioUrl}
+                      onEnded={handleAudioEnded}
+                    ></audio>
+                    <div>
+                      {isPlaying ? <FaPause /> : <FaPlay color="#fff" />}
+                    </div>
+                  </div>
+                  <button
+                    className="voice-record-close"
+                    onClick={onClickCloseModal}
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
