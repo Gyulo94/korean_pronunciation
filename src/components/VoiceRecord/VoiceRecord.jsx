@@ -74,7 +74,7 @@ export default function VoiceRecord() {
         };
 
         try {
-          // console.log("Request body:", requestBody); // 요청 본문 로그 추가
+          console.log("Request body:", requestBody); // 요청 본문 로그 추가
           const response = await requestPronunce(requestBody);
           if (response.return_object.score === "-nan") {
             setScore(1);
@@ -83,7 +83,7 @@ export default function VoiceRecord() {
             setScore(Math.round(response.return_object.score));
             setModalOpen(true);
           }
-          // console.log("response", response);
+          console.log("response", response);
         } catch (error) {
           console.error("Error in requestPronunce:", error);
         }
